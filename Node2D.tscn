@@ -5,7 +5,8 @@
 
 [node name="Node2D" type="Node2D"]
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="Pieces" type="Sprite" parent="."]
 texture = ExtResource( 1 )
 centered = false
+region_rect = Rect2( -184.608, 192.111, 5.84406, 8.76608 )
 script = ExtResource( 2 )

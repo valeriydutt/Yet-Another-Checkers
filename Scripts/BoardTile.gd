@@ -6,6 +6,10 @@ signal remove_piece
 # Emitted when a new Piece is added to this tile
 signal add_piece
 
+# sprites for red and gray pieces
+const gray_piece_tex = preload("res://gameAssets/gray_piece.png")
+const red_piece_tex = preload("res://gameAssets/red_piece.png")
+
 # Data Structure for Piece node that this tile is holding
 var piece = {
 	"exists": false,
@@ -18,7 +22,8 @@ func _ready():
 func get_tile_pos() -> Vector2:
 	return position
 
-func set_tile_pos(new_position: Vector2) -> void:
+func set_tile_pos(new_position: Vector2, sprite_texture: Texture) -> void:
+	get_node("Piece").set_texture(sprite_texture);
 	position = new_position
 	
 func remove_piece() -> void:
