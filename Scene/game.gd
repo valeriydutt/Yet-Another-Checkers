@@ -15,13 +15,16 @@ const TILE_SIZE = 32.0
 const PIECE_SIZE = 28.0
 const BOARD_SIZE = 8
 
+var selected_tile = null
+
 # Coefficient to center our pieces within tiles 
 const CENTRE_COEF  = (1 - PIECE_SIZE / TILE_SIZE) / 2
 
 func _ready():
-	init_board()
+	init_tiles()
 	generate_pieces()
-	move(BOARD[23].piece, BOARD[30].coordinate)
+	#move(BOARD[23].piece, BOARD[30].coordinate)
+	select_tile(Vector2(32, 15))
 
 func generate_pieces() -> void:
 	for count in range(BOARD.size()):
@@ -35,7 +38,7 @@ func generate_pieces() -> void:
 			
 			add_child(BOARD[count].piece)
 
-func init_board() -> void:
+func init_tiles() -> void:
 	for count in range(BOARD.size()):
 		if BOARD[count] == 1:
 			BOARD[count] = {
@@ -50,16 +53,38 @@ func init_board() -> void:
 				"havePiece": false
 			}
 
-func move(piece, new_position) -> void:
-	# Check if there is a piece
+func move_possible(piece, new_position) -> bool:
+	# Check if current tile has a piece
 	if piece == null:
-		return
-	# Check if tile has a piece
+		return false
+	
+	# Check if new tile has a piece
 	if(BOARD[(new_position.x - 2) / 32 + ((new_position.y - 2) / 32) * 8].havePiece == true):
-		return
-	# Check if move is possible
+		return false
+	
+	# Check if move is to one tile diagonally 
 	if (abs(new_position.x - piece.get_tile_pos().x) == TILE_SIZE &&
-			new_position.y - piece.get_tile_pos().y == TILE_SIZE): 
-		piece.set_position(new_position)
+			abs(new_position.y - piece.get_tile_pos().y) == TILE_SIZE):
+		return true
 		
+	return false
 
+func select_tile(tile_coordinates):
+	for i in range(BOARD.size()):
+		if (BOARD[i].coordinate.x - 2 <= tile_coordinates.x && BOARD[i].coordinate.x + 30 > tile_coordinates.x &&
+			BOARD[i].coordinate.y - 2 <= tile_coordinates.y && BOARD[i].coordinate.y + 30 > tile_coordinates.y):
+				return BOARD[i]
+	return null
+
+func _input(event):
+	if event is InputEventMouseButton && event.is_pressed():
+		if selected_tile != null:
+			if(move_possible(selected_tile.piece, select_tile(event.position).coordinate)):
+				selected_tile.havePiece = false;
+				selected_tile.piece.set_position(select_tile(event.position).coordinate)
+				select_tile(event.position).havePiece = true;
+				select_tile(event.position).piece = selected_tile.piece;
+			
+			selected_tile = null;
+		else:
+			selected_tile = select_tile(event.position)
