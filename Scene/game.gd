@@ -86,5 +86,5 @@ func _input(event):
 				select_tile(event.position).piece = selected_tile.piece;
 			
 			selected_tile = null;
-		else:
+		elif select_tile(event.position).havePiece:
 			selected_tile = select_tile(event.position)
