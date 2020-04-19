@@ -19,19 +19,35 @@ const BOARD_SIZE = 8
 const CENTRE_COEF  = (1 - PIECE_SIZE / TILE_SIZE) / 2
 
 func _ready():
-	generate_tiles()
+	init_board()
+	generate_pieces()
 	
-func generate_tiles() -> void:
+func generate_pieces() -> void:
 	for count in range(BOARD.size()):
-		
-		var new_tile = load("res://Prefabs/BoardTile.tscn").instance()
-		
-		if BOARD[count] == 1:
-			var tile_position = Vector2(count % BOARD_SIZE + CENTRE_COEF, count / BOARD_SIZE + CENTRE_COEF) * TILE_SIZE
-			add_child(new_tile)
+		if BOARD[count].havePiece:
+			BOARD[count].piece = load("res://Prefabs/BoardTile.tscn").instance()
+			
+			add_child(BOARD[count].piece)
 			
 			if count < BOARD.size() / 2:
-				new_tile.set_tile_pos(tile_position, new_tile.red_piece_tex)
+				BOARD[count].piece.set_tile_pos(BOARD[count].coordinate, BOARD[count].piece.red_piece_tex)
 			else:
-				new_tile.set_tile_pos(tile_position, new_tile.gray_piece_tex)
+				BOARD[count].piece.set_tile_pos(BOARD[count].coordinate, BOARD[count].piece.gray_piece_tex)
 	
+func init_board() -> void:
+	for count in range(BOARD.size()):
+		if BOARD[count] == 1:
+			BOARD[count] = {
+				"piece": null,
+				"coordinate": Vector2(count % BOARD_SIZE + CENTRE_COEF, count / BOARD_SIZE + CENTRE_COEF) * TILE_SIZE,
+				"havePiece": true
+			}
+		else:
+			BOARD[count] = {
+				"piece": null,
+				"coordinate": Vector2(count % BOARD_SIZE + CENTRE_COEF, count / BOARD_SIZE + CENTRE_COEF) * TILE_SIZE,
+				"havePiece": false
+			}
+
+func move(piece, new_position) -> void:
+	piece.set_position(new_position)
